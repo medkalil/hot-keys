@@ -24,6 +24,11 @@ export interface Game {
   played_at: string;
 }
 
+export interface GamesResponse {
+  data: Game[];
+  success: boolean;
+}
+
 export interface OperatorStats {
   total_score: number;
   current_level: number;

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gamesAPI, operatorsAPI } from '../api/client';
-import { Operator, Game, OperatorStats } from '../types/game';
+import { Operator, OperatorStats, GamesResponse } from '../types/game';
 
 const Profile = () => {
   const [operator, setOperator] = useState<Operator | null>(null);
   const [stats, setStats] = useState<OperatorStats | null>(null);
-  const [games, setGames] = useState<Game[]>([]);
+  const [games, setGames] = useState<GamesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -88,7 +88,7 @@ const Profile = () => {
               </tr>
             </thead>
             <tbody>
-              {games.map((game) => (
+              {games.data.map((game) => (
                 <tr key={game.id} className="border-b border-gray-200 last:border-b-0">
                   <td className="p-4">{game.level}</td>
                   <td className="p-4">{game.wpm}</td>
