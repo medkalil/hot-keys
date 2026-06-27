@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { gamesAPI, operatorsAPI } from '../api/client';
-import { Operator, OperatorStats, GamesResponse } from '../types/game';
+import { Operator, GamesResponse, OperatorStatsResponse, OperatorResponse } from '../types/game';
 
 const Profile = () => {
-  const [operator, setOperator] = useState<Operator | null>(null);
-  const [stats, setStats] = useState<OperatorStats | null>(null);
+  const [operator, setOperator] = useState<OperatorResponse | null>(null);
+  const [stats, setStats] = useState<OperatorStatsResponse | null>(null);
   const [games, setGames] = useState<GamesResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -62,16 +62,16 @@ const Profile = () => {
         className="bg-white p-6 border-2 border-black hard-shadow mb-8"
       >
         <h2 className="text-3xl font-bold text-black tracking-tighter">
-          {operator?.callsign || '...'}
+          {operator?.data.callsign || '...'}
         </h2>
-        <p className="text-gray-500 font-mono">LEVEL {stats?.current_level || '...'}</p>
+        <p className="text-gray-500 font-mono">LEVEL {operator?.data.current_level || '...'}</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Total Score" value={stats?.total_score} />
-        <StatCard title="Best WPM" value={stats?.best_wpm} />
-        <StatCard title="Avg Accuracy" value={stats?.avg_accuracy ? Math.round(stats.avg_accuracy) : undefined} unit="%" />
-        <StatCard title="Games Played" value={stats?.games_played} />
+        <StatCard title="Total Score" value={stats?.data.total_score} />
+        <StatCard title="Best WPM" value={stats?.data.best_wpm} />
+        <StatCard title="Avg Accuracy" value={stats?.data.avg_accuracy ? Math.round(stats.data.avg_accuracy) : undefined} unit="%" />
+        <StatCard title="Games Played" value={games?.data.length} />
       </div>
 
       <h2 className="text-2xl font-bold mb-4 tracking-tighter">GAME HISTORY</h2>
@@ -100,7 +100,7 @@ const Profile = () => {
             </tbody>
           </table>
         </div>
-        {games.length === 0 && <p className="p-4 text-center font-mono">No games played yet.</p>}
+        {games?.data.length === 0 && <p className="p-4 text-center font-mono">No games played yet.</p>}
       </div>
       
       <div className="text-center mt-8">

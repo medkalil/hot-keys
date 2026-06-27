@@ -6,6 +6,11 @@ export interface Operator {
   created_at: string;
 }
 
+export interface OperatorResponse {
+  data: Operator;
+  success: boolean;
+}
+
 export interface GameResult {
   operator_id: string;
   level: number;
@@ -35,6 +40,11 @@ export interface OperatorStats {
   games_played: number;
   avg_accuracy: number;
   best_wpm: number;
+}
+
+export interface OperatorStatsResponse {
+  data: OperatorStats;
+  success: boolean;
 }
 
 export interface LeaderboardEntry {
