@@ -99,6 +99,60 @@ pnpm dev
 # App runs on http://localhost:5173
 ```
 
+### Option 3: Hybrid Setup (Local Apps + Docker DB)
+
+This approach is recommended for active development. It runs the database in Docker but keeps the frontend and backend applications running directly on your machine for faster hot-reloading and debugging.
+
+**1. Configure Backend Environment**
+
+Create or update the `.env` file in the `/backend` directory with the following to connect to the Dockerized database:
+
+```ini
+# backend/.env
+PORT=5000
+NODE_ENV=development
+
+# Connect to Docker DB on localhost
+DB_HOST=localhost
+DB_PORT=5433
+DB_USER=hotkeys_user
+DB_PASSWORD=hotkeys_password
+DB_NAME=hotkeys_db
+```
+
+**2. Start the Database**
+
+Run the following command from the project root to start only the PostgreSQL and Adminer services:
+
+```bash
+docker-compose up -d postgres adminer
+```
+
+**3. Run the Backend**
+
+In a new terminal, navigate to the backend directory and start the development server:
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+**4. Run the Frontend**
+
+In a third terminal, navigate to the frontend directory and start the development server:
+
+```bash
+cd frontend
+pnpm install
+pnpm dev
+```
+
+**Access the services:**
+- **Frontend**: [http://localhost:5173](http://localhost:5173)
+- **API**: [http://localhost:5000](http://localhost:5000)
+- **Database UI**: [http://localhost:8080](http://localhost:8080)
+
 ## 📁 Project Structure
 
 ```

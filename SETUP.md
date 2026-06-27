@@ -54,6 +54,36 @@ pnpm dev
 
 The app will be available at `http://localhost:5173`
 
+### Hybrid Setup (Local Apps + Docker DB)
+
+This is the recommended setup for active development.
+
+**1. Start Docker Database**
+```bash
+docker-compose up -d postgres adminer
+```
+
+**2. Configure Backend**
+
+Ensure your `backend/.env` file points to the Docker database:
+```ini
+DB_HOST=localhost
+DB_PORT=5433
+# ... other vars
+```
+
+**3. Run Local Servers**
+
+```bash
+# Terminal 1: Backend
+cd backend
+npm run dev
+
+# Terminal 2: Frontend
+cd frontend
+pnpm dev
+```
+
 ## 📋 What You Get
 
 ### Screens Implemented
