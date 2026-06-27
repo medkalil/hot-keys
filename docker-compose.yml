@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hotkeys-db
+    environment:
+      POSTGRES_USER: hotkeys_user
+      POSTGRES_PASSWORD: hotkeys_password
+      POSTGRES_DB: hotkeys_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - hotkeys-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hotkeys_user -d hotkeys_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hotkeys-api
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: hotkeys_user
+      DB_PASSWORD: hotkeys_password
+      DB_NAME: hotkeys_db
+      PORT: 5000
+      NODE_ENV: development
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hotkeys-network
+    volumes:
+      - ./backend/src:/app/src
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hotkeys-app
+    environment:
+      VITE_API_URL: http://localhost:5000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    networks:
+      - hotkeys-network
+    volumes:
+      - ./frontend/src:/app/src
+
+volumes:
+  postgres_data:
+
+networks:
+  hotkeys-network:
+    driver: bridge
