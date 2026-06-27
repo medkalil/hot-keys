@@ -53,7 +53,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
   const totalPages = Math.ceil(total / LIMIT);
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-paper animate-slide-down">
       {/* Header */}
       <div className="border-b-2 border-hard bg-white">
         <div className="max-w-6xl mx-auto px-4 py-6">
@@ -117,6 +117,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
             <div>CALLSIGN</div>
             <div>ACCURACY</div>
             <div>TOTAL_SCORE</div>
+            <div>CURRENT_LEVEL</div>
             <div></div>
           </div>
 
@@ -151,8 +152,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
                     </div>
                     <div className="text-xs mt-1">{entry.avg_accuracy}%</div>
                   </div>
-                  <div className="font-bold text-right">{entry.total_score.toLocaleString()}</div>
-                  <div className="text-xs text-gray-600">L{entry.current_level}</div>
+                  <div className="font-bold text-center">{entry.total_score?.toLocaleString()}</div>
+                  <div className="text-xs text-gray-600 text-center">L{entry.current_level}</div>
                 </div>
               ))}
             </div>
