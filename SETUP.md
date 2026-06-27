@@ -12,12 +12,14 @@ docker-compose up --build
 The app will be available at:
 - **Frontend**: http://localhost:5173
 - **API**: http://localhost:5000
+- **Database UI**: http://localhost:8080
 - **Database**: localhost:5432
 
 This starts:
 - ✅ PostgreSQL database (auto-initialized with seed data)
 - ✅ Express.js API backend
 - ✅ React Vite frontend
+- ✅ Adminer database UI
 
 ### Local Development (Without Docker)
 
@@ -201,6 +203,8 @@ docker-compose logs postgres
 - `frontend/src/components/` - Reusable UI components
 - `frontend/src/hooks/useGameState.ts` - Game logic
 - `tailwind.config.js` - Design system configuration
+
+For advanced database management commands (resetting, backups, etc.), see `DB_MANAGEMENT.md`.
 
 ## 🎨 Customization
 

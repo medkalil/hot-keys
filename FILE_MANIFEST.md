@@ -6,10 +6,11 @@
 - `README.md` - Complete project documentation (usage, architecture, API, troubleshooting)
 - `SETUP.md` - Quick start guide with Docker and local development instructions
 - `IMPLEMENTATION_SUMMARY.md` - Technical implementation details and feature overview
+- `DB_MANAGEMENT.md` - Guide for managing the PostgreSQL database
 - `FILE_MANIFEST.md` - This file
 
 ### Configuration
-- `docker-compose.yml` - Multi-service orchestration (PostgreSQL, Backend, Frontend)
+- `docker-compose.yml` - Multi-service orchestration (PostgreSQL, Backend, Frontend, Adminer)
 - `.env.example` - Environment variable template
 - `.gitignore` - Git ignore rules for project
 
@@ -118,6 +119,7 @@
 ├── README.md
 ├── SETUP.md
 ├── IMPLEMENTATION_SUMMARY.md
+├── DB_MANAGEMENT.md
 ├── FILE_MANIFEST.md (this file)
 ├── .gitignore
 ├── .env.example

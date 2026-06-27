@@ -60,6 +60,17 @@ services:
     volumes:
       - ./frontend/src:/app/src
 
+  adminer:
+    image: adminer
+    container_name: hotkeys-db-ui
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - hotkeys-network
+    depends_on:
+      - postgres
+
 volumes:
   postgres_data:
 

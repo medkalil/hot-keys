@@ -51,8 +51,11 @@ docker-compose up --build
 # Access the app
 Frontend: http://localhost:5173
 API: http://localhost:5000
+Database UI: http://localhost:8080
 Database: localhost:5432
 ```
+
+For detailed database management commands, see `DB_MANAGEMENT.md`.
 
 ### Option 2: Local Development
 
@@ -129,6 +132,7 @@ hotkeys/
 │
 ├── docker-compose.yml
 ├── .env.example
+├── DB_MANAGEMENT.md
 └── README.md
 ```
 

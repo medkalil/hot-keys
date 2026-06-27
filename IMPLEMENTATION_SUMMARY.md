@@ -67,6 +67,7 @@ HOT KEYS is a fully functional, brutalist-styled typing speed game with real-tim
   - PostgreSQL 15 (with health checks)
   - Express backend (auto-restart on code changes)
   - React Vite frontend (dev server with hot reload)
+  - Adminer (web UI for database management)
   - Networking and environment variable configuration
 
 #### Configuration
@@ -265,6 +266,7 @@ serve -s dist -l 5173
 
 - **README.md** - Full project documentation
 - **SETUP.md** - Quick start guide
+- **DB_MANAGEMENT.md** - Database management commands and UI access
 - **IMPLEMENTATION_SUMMARY.md** (this file) - Technical overview
 
 ## 🎬 Next Steps to Run

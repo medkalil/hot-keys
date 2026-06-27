@@ -20,8 +20,8 @@ const INITIAL_STATE: GameState = {
 
 export const useGameState = () => {
   const [state, setState] = useState<GameState>(INITIAL_STATE);
-  const timerRef = useRef<NodeJS.Timeout>();
-  const countdownRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<number>();
+  const countdownRef = useRef<number>();
 
   // Start countdown
   const startCountdown = useCallback(() => {
