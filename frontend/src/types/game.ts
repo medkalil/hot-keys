@@ -14,6 +14,24 @@ export interface GameResult {
   score: number;
 }
 
+export interface Game {
+  id: string;
+  operator_id: string;
+  level: number;
+  wpm: number;
+  accuracy: number;
+  score: number;
+  played_at: string;
+}
+
+export interface OperatorStats {
+  total_score: number;
+  current_level: number;
+  games_played: number;
+  avg_accuracy: number;
+  best_wpm: number;
+}
+
 export interface LeaderboardEntry {
   rank: number;
   id: string;

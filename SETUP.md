@@ -13,7 +13,7 @@ The app will be available at:
 - **Frontend**: http://localhost:5173
 - **API**: http://localhost:5000
 - **Database UI**: http://localhost:8080
-- **Database**: localhost:5432
+- **Database**: localhost:5433
 
 This starts:
 - ✅ PostgreSQL database (auto-initialized with seed data)
@@ -31,7 +31,7 @@ cd backend
 # Install dependencies
 npm install
 
-# Ensure PostgreSQL is running locally on port 5432
+# Ensure PostgreSQL is running locally on port 5433
 # With default credentials: user=hotkeys_user, password=hotkeys_password
 
 # Start dev server

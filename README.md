@@ -52,7 +52,7 @@ docker-compose up --build
 Frontend: http://localhost:5173
 API: http://localhost:5000
 Database UI: http://localhost:8080
-Database: localhost:5432
+Database: localhost:5433
 ```
 
 For detailed database management commands, see `DB_MANAGEMENT.md`.
@@ -71,7 +71,7 @@ npm install
 cp .env.example .env
 
 # Start PostgreSQL locally
-# Make sure PostgreSQL is running on localhost:5432
+# Make sure PostgreSQL is running on localhost:5433
 
 # Run migrations & seed data
 npm run typecheck
@@ -287,7 +287,7 @@ GROUP BY operators.id;
 ### Port Already in Use
 - Frontend (5173): `lsof -i :5173` | `kill -9 <PID>`
 - API (5000): `lsof -i :5000` | `kill -9 <PID>`
-- Database (5432): `lsof -i :5432` | `kill -9 <PID>`
+- Database (5433): `lsof -i :5433` | `kill -9 <PID>`
 
 ## 📄 License
 

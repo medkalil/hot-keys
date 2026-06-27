@@ -7,6 +7,7 @@ import { Onboarding } from './pages/Onboarding';
 import { Game } from './pages/Game';
 import { LevelComplete } from './pages/LevelComplete';
 import { Leaderboard } from './pages/Leaderboard';
+import Profile from './pages/Profile';
 
 export default function App() {
   const [operator, setOperator] = useState<Operator | null>(null);
@@ -62,6 +63,7 @@ export default function App() {
           element={<LevelComplete operator={operator} />}
         />
         <Route path="/leaderboard" element={<Leaderboard operator={operator} />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
