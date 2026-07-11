@@ -10,10 +10,10 @@ import { Operator } from '../types/game';
 
 interface GameProps {
   operator: Operator | null;
-  // onGameComplete: (updatedOperator: Operator) => void;
+  onGameComplete?: () => void;
 }
 
-export const Game: React.FC<GameProps> = ({ operator }) => {
+export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const wordLoadedRef = useRef(false);
@@ -25,7 +25,7 @@ export const Game: React.FC<GameProps> = ({ operator }) => {
     setUserInput,
     calculateScore,
     resetGame,
-  } = useGameState();
+  } = useGameState(operator?.current_level || 1);
 
   // Load initial word
   useEffect(() => {
@@ -110,6 +110,10 @@ export const Game: React.FC<GameProps> = ({ operator }) => {
           accuracy: state.accuracy,
           score,
         });
+        
+        if (onGameComplete) {
+          onGameComplete();
+        }
       }
 
       // Navigate to completion screen

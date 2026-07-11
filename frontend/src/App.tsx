@@ -56,7 +56,7 @@ export default function App() {
         />
         <Route
           path="/game"
-          element={<Game operator={operator} />}
+          element={<Game operator={operator} onGameComplete={loadOperator} />}
         />
         <Route
           path="/level-complete"

@@ -18,8 +18,12 @@ const INITIAL_STATE: GameState = {
   operatorId: null,
 };
 
-export const useGameState = () => {
-  const [state, setState] = useState<GameState>(INITIAL_STATE);
+export const useGameState = (initialLevel: number = 1) => {
+  const [state, setState] = useState<GameState>(() => ({
+    ...INITIAL_STATE,
+    currentLevel: initialLevel,
+    maxTime: 60 - (initialLevel - 1) * 10,
+  }));
   const timerRef = useRef<number>();
   const countdownRef = useRef<number>();
 
@@ -153,8 +157,12 @@ export const useGameState = () => {
   const resetGame = useCallback(() => {
     clearInterval(timerRef.current);
     clearInterval(countdownRef.current);
-    setState(INITIAL_STATE);
-  }, []);
+    setState({
+      ...INITIAL_STATE,
+      currentLevel: initialLevel,
+      maxTime: 60 - (initialLevel - 1) * 10,
+    });
+  }, [initialLevel]);
 
   return {
     state,

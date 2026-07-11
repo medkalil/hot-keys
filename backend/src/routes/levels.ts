@@ -1,47 +1,15 @@
 import { Router, Request, Response } from 'express';
 import { ApiResponse } from '../types';
+import levelWordsJson from '../data/levels.json';
 
 const router = Router();
 
-// Level word lists - can be expanded later
-const levelWords: { [key: number]: string[] } = {
-  1: [
-    'the quick brown fox',
-    'jumps over lazy dog',
-    'fountain of youth',
-    'crystal clear water',
-    'midnight eclipse',
-    'thundering clouds',
-    'silver moonlight',
-    'golden horizon',
-    'electric storm',
-    'frozen tundra',
-  ],
-  2: [
-    'algorithmic complexity',
-    'synchronization barrier',
-    'authentication protocol',
-    'computational efficiency',
-    'distributed consensus',
-    'asynchronous iteration',
-    'cryptographic verification',
-    'polymorphic inheritance',
-    'abstraction layer',
-    'optimization paradigm',
-  ],
-  3: [
-    'phenomenological transcendence',
-    'serendipitous concatenation',
-    'ineffable quintessence',
-    'ubiquitous obfuscation',
-    'perspicacious sublimation',
-    'ostentatious manifestation',
-    'ephemeral transfiguration',
-    'inscrutable obfuscation',
-    'evanescent luminescence',
-    'mellifluous perambulation',
-  ],
-};
+// Level word lists - loaded from external JSON file
+const levelWords: { [key: number]: string[] } = {};
+for (const [key, value] of Object.entries(levelWordsJson)) {
+  levelWords[parseInt(key)] = value;
+}
+
 
 // Get level data
 router.get('/:level', async (req: Request, res: Response) => {
