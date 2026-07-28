@@ -33,6 +33,7 @@ export const gamesAPI = {
     wpm: number;
     accuracy: number;
     score: number;
+    word_id: number;
   }) =>
     client.post('/api/games', data),
   
@@ -56,8 +57,8 @@ export const leaderboardAPI = {
 };
 
 export const levelsAPI = {
-  get: (level: number) =>
-    client.get(`/api/levels/${level}`),
+  get: (level: number, operator_id: string) =>
+    client.get(`/api/levels/${level}`, { params: { operator_id } }),
   
   getInfo: (level: number) =>
     client.get(`/api/levels/${level}/info`),

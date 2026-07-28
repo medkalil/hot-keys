@@ -19,6 +19,7 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
   const wordLoadedRef = useRef(false);
   
   const [difficulty, setDifficulty] = useState<string>('');
+  const [wordId, setWordId] = useState<number | null>(null);
 
   const {
     state,
@@ -33,22 +34,28 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
   // Load initial word & level metadata
   useEffect(() => {
     const loadWord = async () => {
-      if (wordLoadedRef.current) return;
+      if (wordLoadedRef.current || !operator) return;
       wordLoadedRef.current = true;
 
       try {
-        const response = await levelsAPI.get(state.currentLevel);
-        const { word, difficulty, timeLimit } = response.data.data;
+        const response = await levelsAPI.get(state.currentLevel, operator.id);
+        const { word, word_id, difficulty, timeLimit } = response.data.data;
         setCurrentWord(word);
+        setWordId(word_id);
         if (difficulty) setDifficulty(difficulty);
         if (timeLimit) setMaxTime(timeLimit);
       } catch (error) {
         console.error('Failed to load word:', error);
+        // Handle case where all words are played
+        if ((error as any).response?.data?.error === 'All words for this level have been played') {
+          // You might want to navigate to a different screen or show a message
+          navigate('/level-complete', { state: { ...state, allWordsPlayed: true } });
+        }
       }
     };
 
     loadWord();
-  }, [state.currentLevel, setCurrentWord, setMaxTime]);
+  }, [state.currentLevel, setCurrentWord, setMaxTime, operator, navigate]);
 
   // Focus input on mount
   useEffect(() => {
@@ -108,13 +115,14 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
     const score = calculateScore();
     
     try {
-      if (operator) {
+      if (operator && wordId) {
         await gamesAPI.submit({
           operator_id: operator.id,
           level: state.currentLevel,
           wpm: state.wpm,
           accuracy: state.accuracy,
           score,
+          word_id: wordId,
         });
         
         if (onGameComplete) {

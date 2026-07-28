@@ -8,6 +8,7 @@ const router = Router();
 router.get('/:level', async (req: Request, res: Response) => {
   try {
     const { level } = req.params;
+    const { operator_id } = req.query;
     const levelNum = parseInt(level);
 
     if (isNaN(levelNum) || levelNum < 1) {
@@ -17,7 +18,14 @@ router.get('/:level', async (req: Request, res: Response) => {
       } as ApiResponse<null>);
     }
 
-    // Query level info and level words from PostgreSQL
+    if (!operator_id) {
+      return res.status(400).json({
+        success: false,
+        error: 'operator_id is required',
+      } as ApiResponse<null>);
+    }
+
+    // Query level info from PostgreSQL
     const levelRes = await pool.query(
       'SELECT number, name, difficulty, time_limit FROM levels WHERE number = $1',
       [levelNum]
@@ -32,26 +40,34 @@ router.get('/:level', async (req: Request, res: Response) => {
 
     const levelData = levelRes.rows[0];
 
+    // Query for a random word that the operator has not played yet
     const wordsRes = await pool.query(
-      'SELECT word FROM level_words WHERE level_number = $1',
-      [levelNum]
+      `SELECT id, word FROM level_words
+       WHERE level_number = $1 AND id NOT IN (
+         SELECT word_id FROM operator_played_words
+         WHERE operator_id = $2 AND level_number = $1
+       )
+       ORDER BY RANDOM()
+       LIMIT 1`,
+      [levelNum, operator_id]
     );
 
     if (wordsRes.rows.length === 0) {
+      // This means the player has played all words for this level
       return res.status(404).json({
         success: false,
-        error: 'No words found for this level',
+        error: 'All words for this level have been played',
       } as ApiResponse<null>);
     }
 
-    const words = wordsRes.rows.map((row: { word: string }) => row.word);
-    const randomWord = words[Math.floor(Math.random() * words.length)];
+    const randomWord = wordsRes.rows[0];
 
     return res.json({
       success: true,
       data: {
         level: levelData.number,
-        word: randomWord,
+        word_id: randomWord.id,
+        word: randomWord.word,
         difficulty: levelData.difficulty,
         timeLimit: levelData.time_limit,
       },

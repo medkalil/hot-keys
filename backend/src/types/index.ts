@@ -41,6 +41,7 @@ export interface SubmitGameRequest {
   wpm: number;
   accuracy: number;
   score: number;
+  word_id: number;
 }
 
 export interface ApiResponse<T> {
