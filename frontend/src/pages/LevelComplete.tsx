@@ -90,11 +90,28 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
 
         {/* Split Flap Countdown (if next level exists) */}
         {hasNextLevel && (
-          <div className="mb-8 animate-fade-in">
+          <div className="relative mb-8 animate-fade-in">
             <SplitFlapCountdown
               seconds={countdown}
               label={`ENGAGING SECTOR ${gameData.level + 1} IN`}
             />
+            <div className="absolute top-2 right-2">
+              {isPaused ? (
+                <button
+                  onClick={() => setIsPaused(false)}
+                  className="button-base bg-green-500 hover:bg-green-600 text-white text-xs py-1 px-3 hard-shadow-sm font-mono"
+                >
+                  RESUME
+                </button>
+              ) : (
+                <button
+                  onClick={() => setIsPaused(true)}
+                  className="button-base bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-1 px-3 hard-shadow-sm font-mono"
+                >
+                  PAUSE
+                </button>
+              )}
+            </div>
           </div>
         )}
 
@@ -168,30 +185,13 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={handleNextLevel}
-                  disabled={loading || isPaused}
-                  className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3 disabled:opacity-50"
-                >
-                  {loading ? 'INITIALIZING...' : `▶ ENGAGE ${nextLevelInfo ? nextLevelInfo.name : 'SECTOR ' + (gameData.level + 1)} NOW`}
-                </button>
-                {isPaused ? (
-                  <button
-                    onClick={() => setIsPaused(false)}
-                    className="button-base bg-green-500 hover:bg-green-600 text-white text-lg py-4 px-6 hard-shadow-lg flex-shrink-0"
-                  >
-                    RESUME
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setIsPaused(true)}
-                    className="button-base bg-yellow-500 hover:bg-yellow-600 text-white text-lg py-4 px-6 hard-shadow-lg flex-shrink-0"
-                  >
-                    PAUSE
-                  </button>
-                )}
-              </div>
+              <button
+                onClick={handleNextLevel}
+                disabled={loading || isPaused}
+                className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3 disabled:opacity-50"
+              >
+                {loading ? 'INITIALIZING...' : `▶ ENGAGE ${nextLevelInfo ? nextLevelInfo.name : 'SECTOR ' + (gameData.level + 1)} NOW`}
+              </button>
             </div>
           ) : (
             <button
