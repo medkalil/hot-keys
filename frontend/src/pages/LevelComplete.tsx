@@ -14,6 +14,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(10);
   const [hasNextLevel, setHasNextLevel] = useState<boolean | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   const gameData = location.state || {
     level: 1,
@@ -58,7 +59,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   };
 
   useEffect(() => {
-    if (!hasNextLevel) return;
+    if (!hasNextLevel || isPaused) return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
@@ -72,7 +73,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [hasNextLevel]);
+  }, [hasNextLevel, isPaused]);
 
   const handleBackHome = () => {
     navigate('/');
@@ -167,13 +168,30 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
                   </span>
                 </div>
               )}
-              <button
-                onClick={handleNextLevel}
-                disabled={loading}
-                className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3"
-              >
-                {loading ? 'INITIALIZING...' : `▶ ENGAGE ${nextLevelInfo ? nextLevelInfo.name : 'SECTOR ' + (gameData.level + 1)} NOW`}
-              </button>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={handleNextLevel}
+                  disabled={loading || isPaused}
+                  className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3 disabled:opacity-50"
+                >
+                  {loading ? 'INITIALIZING...' : `▶ ENGAGE ${nextLevelInfo ? nextLevelInfo.name : 'SECTOR ' + (gameData.level + 1)} NOW`}
+                </button>
+                {isPaused ? (
+                  <button
+                    onClick={() => setIsPaused(false)}
+                    className="button-base bg-green-500 hover:bg-green-600 text-white text-lg py-4 px-6 hard-shadow-lg flex-shrink-0"
+                  >
+                    RESUME
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsPaused(true)}
+                    className="button-base bg-yellow-500 hover:bg-yellow-600 text-white text-lg py-4 px-6 hard-shadow-lg flex-shrink-0"
+                  >
+                    PAUSE
+                  </button>
+                )}
+              </div>
             </div>
           ) : (
             <button
