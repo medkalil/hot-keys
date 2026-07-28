@@ -68,10 +68,10 @@ const Profile = () => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <StatCard title="Total Score" value={stats?.data.total_score} />
-        <StatCard title="Best WPM" value={stats?.data.best_wpm} />
+        <StatCard title="Total Score" value={stats?.data.total_score ? stats?.data.total_score : undefined } />
+        <StatCard title="Best WPM" value={stats?.data.best_wpm ? stats?.data.best_wpm : undefined } />
         <StatCard title="Avg Accuracy" value={stats?.data.avg_accuracy ? Math.round(stats.data.avg_accuracy) : undefined} unit="%" />
-        <StatCard title="Games Played" value={games?.data.length} />
+        <StatCard title="Games Played" value={games?.data.length ? games?.data.length : undefined} />
       </div>
 
       <h2 className="text-2xl font-bold mb-4 tracking-tighter">GAME HISTORY</h2>
