@@ -102,7 +102,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
                   {operatorRank.callsign}
                 </div>
                 <div className="font-mono">{operatorRank.avg_accuracy}%</div>
-                <div className="font-mono font-bold">{operatorRank.total_score.toLocaleString()}</div>
+                <div className="font-mono font-bold">{operatorRank.total_score?.toLocaleString()}</div>
                 <div className="text-right text-sm font-bold text-green-600">YOU</div>
               </div>
             </div>

@@ -75,3 +75,24 @@ To restore the database from a `.sql` backup file:
 # This command executes psql inside the container, feeding it the backup.sql file from your host machine.
 cat backup.sql | docker-compose exec -T postgres psql -U hotkeys_user -d hotkeys_db
 ```
+
+### Helpful psql commands after connecting:
+# before must connect with psql : 
+    - (option 1) psql "postgresql://myuser:mypass@dpg-abc123.render.com:5432/mydb"
+    - (option 2) psql \
+        -h dpg-abc123.render.com \
+        -p 5432 \
+        -U myuser \
+        -d mydb
+
+Useful psql commands after connecting
+
+List databases: \l
+
+List tables: \dt
+
+Describe a table: \d operators
+
+Run SQL: SELECT * FROM operators;
+
+Exit: \q
