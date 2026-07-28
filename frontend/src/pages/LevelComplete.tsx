@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Operator } from '../types/game';
+import { SplitFlapCountdown } from '../components/SplitFlapCountdown';
+import { levelsAPI } from '../api/client';
 
 interface LevelCompleteProps {
   operator: Operator | null;
@@ -10,6 +12,8 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
+  const [countdown, setCountdown] = useState(10);
+  const [hasNextLevel, setHasNextLevel] = useState<boolean | null>(null);
 
   const gameData = location.state || {
     level: 1,
@@ -18,41 +22,82 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
     score: 0,
   };
 
+  // Dynamically check if the next level exists in the system via API
+  useEffect(() => {
+    const checkNextLevel = async () => {
+      try {
+        await levelsAPI.getInfo(gameData.level + 1);
+        setHasNextLevel(true);
+      } catch {
+        setHasNextLevel(false);
+      }
+    };
+
+    checkNextLevel();
+  }, [gameData.level]);
+
   const handleNextLevel = async () => {
+    if (loading) return;
     setLoading(true);
     try {
-      // Small delay for animation
-      await new Promise((resolve) => setTimeout(resolve, 600));
+      await new Promise((resolve) => setTimeout(resolve, 300));
       navigate('/game');
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (!hasNextLevel) return;
+
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          handleNextLevel();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [hasNextLevel]);
+
   const handleBackHome = () => {
     navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center px-4">
+    <div className="min-h-screen bg-paper flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-2xl">
         {/* Header */}
-        <div className="mb-12">
+        <div className="mb-8 text-center sm:text-left">
           <h1 className="text-5xl font-bold mb-2">HOT KEYS</h1>
-          <p className="text-xl text-gray-700">SECTOR COMPLETE</p>
+          <p className="text-xl font-mono text-gray-700">SECTOR {gameData.level} COMPLETE</p>
         </div>
 
+        {/* Split Flap Countdown (if next level exists) */}
+        {hasNextLevel && (
+          <div className="mb-8 animate-fade-in">
+            <SplitFlapCountdown
+              seconds={countdown}
+              label={`ENGAGING SECTOR ${gameData.level + 1} IN`}
+            />
+          </div>
+        )}
+
         {/* Score Card */}
-        <div className="border-hard border-2 bg-white hard-shadow-lg p-12 mb-8 animate-slide-up">
-          <div className="grid grid-cols-2 gap-8 mb-12">
+        <div className="border-hard border-2 bg-white hard-shadow-lg p-8 sm:p-12 mb-8 animate-slide-up">
+          <div className="grid grid-cols-2 gap-8 mb-8">
             {/* Level Info */}
-            <div className="border-r-2 border-hard pr-8">
+            <div className="border-r-2 border-hard pr-4 sm:pr-8">
               <div className="font-mono text-xs font-bold text-gray-600 mb-2">LEVEL COMPLETED</div>
-              <div className="text-5xl font-bold font-mono">{gameData.level}</div>
+              <div className="text-5xl font-bold font-mono">SECTOR {gameData.level}</div>
             </div>
 
             {/* Score */}
-            <div className="pl-8">
+            <div className="pl-4 sm:pl-8">
               <div className="font-mono text-xs font-bold text-gray-600 mb-2">TOTAL SCORE</div>
               <div className="text-5xl font-bold font-mono">{gameData.score.toLocaleString()}</div>
             </div>
@@ -70,21 +115,21 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
                 <div className="text-3xl font-bold font-mono">{gameData.accuracy}%</div>
               </div>
               <div className="text-center">
-                <div className="font-mono text-xs font-bold text-gray-600 mb-2">PROGRESSION</div>
-                <div className="text-3xl font-bold font-mono">{gameData.level}/3</div>
+                <div className="font-mono text-xs font-bold text-gray-600 mb-2">CURRENT LEVEL</div>
+                <div className="text-3xl font-bold font-mono">L{gameData.level}</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Visual progression indicator */}
-        <div className="mb-12">
+        <div className="mb-8">
           <div className="grid grid-cols-3 gap-4">
             {[1, 2, 3].map((level) => (
               <div
                 key={level}
                 className={`
-                  h-24 border-hard border-2 flex items-center justify-center font-mono font-bold text-2xl
+                  h-20 border-hard border-2 flex items-center justify-center font-mono font-bold text-xl
                   ${
                     level <= gameData.level
                       ? 'bg-text text-paper'
@@ -94,7 +139,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
                   transition-all duration-300
                 `}
               >
-                {level <= gameData.level ? '✓' : level}
+                {level <= gameData.level ? '✓ SECTOR ' + level : 'SECTOR ' + level}
               </div>
             ))}
           </div>
@@ -102,26 +147,26 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
 
         {/* Buttons */}
         <div className="space-y-4">
-          {gameData.level < 3 ? (
+          {hasNextLevel ? (
             <button
               onClick={handleNextLevel}
               disabled={loading}
-              className="w-full button-base text-lg py-4 hard-shadow-lg"
+              className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3"
             >
-              {loading ? 'LOADING...' : '▶ ENGAGE LEVEL ' + (gameData.level + 1)}
+              {loading ? 'INITIALIZING...' : `▶ ENGAGE SECTOR ${gameData.level + 1} NOW`}
             </button>
           ) : (
             <button
               onClick={handleBackHome}
               className="w-full button-base text-lg py-4 hard-shadow-lg"
             >
-              🏆 ALL SECTORS UNLOCKED
+              🏆 ALL SECTORS UNLOCKED - MISSION COMPLETE
             </button>
           )}
 
           <button
             onClick={handleBackHome}
-            className="w-full button-outline text-lg py-4"
+            className="w-full button-outline text-lg py-4 font-mono"
           >
             ← BACK TO TERMINAL
           </button>
@@ -129,12 +174,12 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
 
         {/* Rankings preview */}
         {operator && (
-          <div className="mt-12 border-hard border-2 bg-gray-50 p-8">
-            <h3 className="font-mono text-xs font-bold mb-4">OPERATOR STATUS</h3>
-            <div className="font-mono text-sm space-y-2">
-              <p>Callsign: <span className="font-bold">{operator.callsign}</span></p>
-              <p>Current Level: <span className="font-bold">{operator.current_level}</span></p>
-              <p>Total Score: <span className="font-bold">{operator.total_score.toLocaleString()}</span></p>
+          <div className="mt-8 border-hard border-2 bg-gray-50 p-6 font-mono text-xs">
+            <h3 className="font-bold mb-3 uppercase tracking-wider">OPERATOR DOSSIER</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div>Callsign: <span className="font-bold">{operator.callsign}</span></div>
+              <div>Current Level: <span className="font-bold">L{operator.current_level}</span></div>
+              <div>Score: <span className="font-bold">{operator.total_score.toLocaleString()}</span></div>
             </div>
           </div>
         )}

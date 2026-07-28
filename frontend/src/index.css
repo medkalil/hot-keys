@@ -278,3 +278,48 @@ textarea::placeholder {
 .animate-flash {
   animation: flash 0.6s ease-in-out;
 }
+
+/* Split Flap Animations */
+@keyframes flipTop {
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: rotateX(-90deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotateX(-90deg);
+    opacity: 0;
+  }
+}
+
+@keyframes flipBottom {
+  0% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  50% {
+    transform: rotateX(90deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-flip-top {
+  animation: flipTop 0.45s ease-in forwards;
+  backface-visibility: hidden;
+}
+
+.animate-flip-bottom {
+  animation: flipBottom 0.45s ease-out forwards;
+  backface-visibility: hidden;
+}
+
+.perspective-500 {
+  perspective: 500px;
+}
