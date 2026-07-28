@@ -43,18 +43,18 @@ CREATE INDEX IF NOT EXISTS idx_games_level ON games(level);
 CREATE INDEX IF NOT EXISTS idx_operators_callsign ON operators(callsign);
 
 -- Seed some demo data
-INSERT INTO operators (callsign, passcode_hash, total_score, current_level) 
-VALUES ('VOID_WALKER', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1450290, 5)
-ON CONFLICT (callsign) DO NOTHING;
+-- INSERT INTO operators (callsign, passcode_hash, total_score, current_level) 
+-- VALUES ('VOID_WALKER', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1450290, 5)
+-- ON CONFLICT (callsign) DO NOTHING;
 
-INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
-VALUES ('GHOST_IN_SHELL', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1420100, 4)
-ON CONFLICT (callsign) DO NOTHING;
+-- INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
+-- VALUES ('GHOST_IN_SHELL', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1420100, 4)
+-- ON CONFLICT (callsign) DO NOTHING;
 
-INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
-VALUES ('SYNTAX_ERROR', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1380500, 4)
-ON CONFLICT (callsign) DO NOTHING;
+-- INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
+-- VALUES ('SYNTAX_ERROR', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1380500, 4)
+-- ON CONFLICT (callsign) DO NOTHING;
 
-INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
-VALUES ('NULL_PTR', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 835900, 2)
-ON CONFLICT (callsign) DO NOTHING;
+-- INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
+-- VALUES ('NULL_PTR', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 835900, 2)
+-- ON CONFLICT (callsign) DO NOTHING;
