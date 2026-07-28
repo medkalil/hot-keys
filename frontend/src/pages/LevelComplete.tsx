@@ -79,8 +79,8 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   };
 
   return (
-    <div className="min-h-screen bg-paper flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-2xl">
+    <div className="min-h-screen bg-paper overflow-y-auto px-4 py-12">
+      <div className="w-full max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-8 text-center sm:text-left">
           <h1 className="text-5xl font-bold mb-2">HOT KEYS</h1>
