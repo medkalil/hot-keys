@@ -164,6 +164,14 @@ export const useGameState = (initialLevel: number = 1) => {
     });
   }, [initialLevel]);
 
+  // Set max time dynamically from level metadata
+  const setMaxTime = useCallback((time: number) => {
+    setState((prev) => ({
+      ...prev,
+      maxTime: time,
+    }));
+  }, []);
+
   return {
     state,
     startCountdown,
@@ -173,5 +181,6 @@ export const useGameState = (initialLevel: number = 1) => {
     levelUp,
     resetGame,
     updateWPM,
+    setMaxTime,
   };
 };

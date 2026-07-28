@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameState } from '../hooks/useGameState';
 import { levelsAPI, gamesAPI } from '../api/client';
@@ -18,6 +18,8 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const wordLoadedRef = useRef(false);
   
+  const [difficulty, setDifficulty] = useState<string>('');
+
   const {
     state,
     startCountdown,
@@ -25,9 +27,10 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
     setUserInput,
     calculateScore,
     resetGame,
+    setMaxTime,
   } = useGameState(operator?.current_level || 1);
 
-  // Load initial word
+  // Load initial word & level metadata
   useEffect(() => {
     const loadWord = async () => {
       if (wordLoadedRef.current) return;
@@ -35,14 +38,17 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
 
       try {
         const response = await levelsAPI.get(state.currentLevel);
-        setCurrentWord(response.data.data.word);
+        const { word, difficulty, timeLimit } = response.data.data;
+        setCurrentWord(word);
+        if (difficulty) setDifficulty(difficulty);
+        if (timeLimit) setMaxTime(timeLimit);
       } catch (error) {
         console.error('Failed to load word:', error);
       }
     };
 
     loadWord();
-  }, [state.currentLevel]);
+  }, [state.currentLevel, setCurrentWord, setMaxTime]);
 
   // Focus input on mount
   useEffect(() => {
@@ -162,6 +168,7 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
         elapsedTime={state.elapsedTime}
         maxTime={state.maxTime}
         level={state.currentLevel}
+        difficulty={difficulty}
       />
 
       <Countdown count={state.countdown} isActive={state.countdownActive} />

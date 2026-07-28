@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import app from './app';
 import { query } from './database/client';
+import { initDb } from './database/initDb';
 
 const PORT = process.env.PORT || 5000;
 
@@ -10,6 +11,9 @@ async function startServer() {
     console.log('Testing database connection...');
     const result = await query('SELECT NOW()');
     console.log('✓ Database connected:', result.rows[0]);
+
+    // Initialize database schema and seeds
+    await initDb();
 
     // Start server
     app.listen(PORT, () => {

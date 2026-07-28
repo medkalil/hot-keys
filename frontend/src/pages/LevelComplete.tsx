@@ -22,14 +22,24 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
     score: 0,
   };
 
+  const [nextLevelInfo, setNextLevelInfo] = useState<{
+    name: string;
+    description: string;
+    difficulty: string;
+    minAccuracy: number;
+    timeLimit: number;
+  } | null>(null);
+
   // Dynamically check if the next level exists in the system via API
   useEffect(() => {
     const checkNextLevel = async () => {
       try {
-        await levelsAPI.getInfo(gameData.level + 1);
+        const response = await levelsAPI.getInfo(gameData.level + 1);
+        setNextLevelInfo(response.data.data);
         setHasNextLevel(true);
       } catch {
         setHasNextLevel(false);
+        setNextLevelInfo(null);
       }
     };
 
@@ -148,13 +158,23 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
         {/* Buttons */}
         <div className="space-y-4">
           {hasNextLevel ? (
-            <button
-              onClick={handleNextLevel}
-              disabled={loading}
-              className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3"
-            >
-              {loading ? 'INITIALIZING...' : `▶ ENGAGE SECTOR ${gameData.level + 1} NOW`}
-            </button>
+            <div>
+              {nextLevelInfo && (
+                <div className="mb-3 font-mono text-xs text-gray-700 bg-amber-50 border-2 border-hard p-3 flex items-center justify-between font-bold">
+                  <span>OBJECTIVE: {nextLevelInfo.name}</span>
+                  <span className="uppercase text-amber-800">
+                    {nextLevelInfo.difficulty} • {nextLevelInfo.timeLimit}S LIMIT • {nextLevelInfo.minAccuracy}% MIN ACC
+                  </span>
+                </div>
+              )}
+              <button
+                onClick={handleNextLevel}
+                disabled={loading}
+                className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3"
+              >
+                {loading ? 'INITIALIZING...' : `▶ ENGAGE ${nextLevelInfo ? nextLevelInfo.name : 'SECTOR ' + (gameData.level + 1)} NOW`}
+              </button>
+            </div>
           ) : (
             <button
               onClick={handleBackHome}

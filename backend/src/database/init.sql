@@ -21,6 +21,23 @@ CREATE TABLE IF NOT EXISTS games (
   played_at TIMESTAMP DEFAULT NOW()
 );
 
+-- Create levels table
+CREATE TABLE IF NOT EXISTS levels (
+  number INTEGER PRIMARY KEY,
+  name VARCHAR(100) NOT NULL,
+  description TEXT,
+  difficulty VARCHAR(20) NOT NULL,
+  min_accuracy INTEGER NOT NULL DEFAULT 80,
+  time_limit INTEGER NOT NULL DEFAULT 60
+);
+
+-- Create level_words table
+CREATE TABLE IF NOT EXISTS level_words (
+  id SERIAL PRIMARY KEY,
+  level_number INTEGER NOT NULL REFERENCES levels(number) ON DELETE CASCADE,
+  word TEXT NOT NULL
+);
+
 -- Create leaderboard view
 CREATE OR REPLACE VIEW leaderboard AS
 SELECT 
@@ -41,20 +58,56 @@ ORDER BY total_score DESC;
 CREATE INDEX IF NOT EXISTS idx_games_operator_id ON games(operator_id);
 CREATE INDEX IF NOT EXISTS idx_games_level ON games(level);
 CREATE INDEX IF NOT EXISTS idx_operators_callsign ON operators(callsign);
+CREATE INDEX IF NOT EXISTS idx_level_words_level_number ON level_words(level_number);
 
--- Seed some demo data
--- INSERT INTO operators (callsign, passcode_hash, total_score, current_level) 
--- VALUES ('VOID_WALKER', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1450290, 5)
--- ON CONFLICT (callsign) DO NOTHING;
+-- Seed Levels Metadata
+INSERT INTO levels (number, name, description, difficulty, min_accuracy, time_limit) VALUES
+(1, 'SECTOR ALPHA', 'Basic typing practice', 'Easy', 80, 60),
+(2, 'SECTOR BETA', 'Technical terminology', 'Medium', 85, 50),
+(3, 'SECTOR GAMMA', 'Advanced vocabulary', 'Hard', 90, 40)
+ON CONFLICT (number) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  difficulty = EXCLUDED.difficulty,
+  min_accuracy = EXCLUDED.min_accuracy,
+  time_limit = EXCLUDED.time_limit;
 
--- INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
--- VALUES ('GHOST_IN_SHELL', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1420100, 4)
--- ON CONFLICT (callsign) DO NOTHING;
+-- Seed Level Words
+DELETE FROM level_words WHERE level_number IN (1, 2, 3);
 
--- INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
--- VALUES ('SYNTAX_ERROR', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 1380500, 4)
--- ON CONFLICT (callsign) DO NOTHING;
+INSERT INTO level_words (level_number, word) VALUES
+-- Level 1 Words
+(1, 'the quick brown fox'),
+(1, 'jumps over lazy dog'),
+(1, 'fountain of youth'),
+(1, 'crystal clear water'),
+(1, 'midnight eclipse'),
+(1, 'thundering clouds'),
+(1, 'silver moonlight'),
+(1, 'golden horizon'),
+(1, 'electric storm'),
+(1, 'frozen tundra'),
 
--- INSERT INTO operators (callsign, passcode_hash, total_score, current_level)
--- VALUES ('NULL_PTR', '$2a$10$abcdefghijklmnopqrst.uvwxyz123456789012345678901234567', 835900, 2)
--- ON CONFLICT (callsign) DO NOTHING;
+-- Level 2 Words
+(2, 'algorithmic complexity'),
+(2, 'synchronization barrier'),
+(2, 'authentication protocol'),
+(2, 'computational efficiency'),
+(2, 'distributed consensus'),
+(2, 'asynchronous iteration'),
+(2, 'cryptographic verification'),
+(2, 'polymorphic inheritance'),
+(2, 'abstraction layer'),
+(2, 'optimization paradigm'),
+
+-- Level 3 Words
+(3, 'phenomenological transcendence'),
+(3, 'serendipitous concatenation'),
+(3, 'ineffable quintessence'),
+(3, 'ubiquitous obfuscation'),
+(3, 'perspicacious sublimation'),
+(3, 'ostentatious manifestation'),
+(3, 'ephemeral transfiguration'),
+(3, 'inscrutable obfuscation'),
+(3, 'evanescent luminescence'),
+(3, 'mellifluous perambulation');
