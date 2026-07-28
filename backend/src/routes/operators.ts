@@ -27,15 +27,30 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Check if callsign already exists
     const existingCheck = await query(
-      'SELECT id FROM operators WHERE callsign = $1',
+      'SELECT id, callsign, passcode_hash, total_score, current_level FROM operators WHERE callsign = $1',
       [callsign]
     );
 
     if (existingCheck.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        error: 'Callsign already exists',
-      } as ApiResponse<null>);
+      const existingOperator = existingCheck.rows[0];
+      const isPasscodeValid = await bcrypt.compare(passcode, existingOperator.passcode_hash);
+
+      if (isPasscodeValid) {
+        return res.status(200).json({
+          success: true,
+          data: {
+            id: existingOperator.id,
+            callsign: existingOperator.callsign,
+            total_score: existingOperator.total_score,
+            current_level: existingOperator.current_level,
+          },
+        } as ApiResponse<Partial<Operator>>);
+      } else {
+        return res.status(401).json({
+          success: false,
+          error: 'Callsign already exists or wrong passcode',
+        } as ApiResponse<null>);
+      }
     }
 
     // Hash passcode
