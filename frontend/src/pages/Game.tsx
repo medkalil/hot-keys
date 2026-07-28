@@ -43,7 +43,7 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
         setCurrentWord(word);
         setWordId(word_id);
         if (difficulty) setDifficulty(difficulty);
-        if (timeLimit) setMaxTime(timeLimit);
+        if (timeLimit) setMaxTime(timeLimit); 
       } catch (error) {
         console.error('Failed to load word:', error);
         // Handle case where all words are played
