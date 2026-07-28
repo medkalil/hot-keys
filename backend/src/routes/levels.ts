@@ -6,7 +6,7 @@ const router = Router();
 
 // Get level data (word, difficulty, time limit)
 router.get('/:level', async (req: Request, res: Response) => {
-  try {
+  try { 
     const { level } = req.params;
     const { operator_id } = req.query;
     const levelNum = parseInt(level);
