@@ -34,7 +34,8 @@ router.post('/', async (req: Request, res: Response) => {
     if (existingCheck.rows.length > 0) {
       const existingOperator = existingCheck.rows[0];
       const isPasscodeValid = await bcrypt.compare(passcode, existingOperator.passcode_hash);
-
+console.log("existingOperator", existingOperator)
+console.log("isPasscodeValid", isPasscodeValid)
       if (isPasscodeValid) {
         return res.status(200).json({
           success: true,
