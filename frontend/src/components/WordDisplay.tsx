@@ -13,15 +13,16 @@ export const WordDisplay: React.FC<WordDisplayProps> = ({
   isError,
   isGameStarted,
 }) => {
-  const [shake, setShake] = useState(false);
+  const [shakeKey, setShakeKey] = useState(0);
 
   useEffect(() => {
     if (isError) {
-      setShake(true);
-      const timer = setTimeout(() => setShake(false), 400);
-      return () => clearTimeout(timer);
+      // Re-trigger shake on every keystroke while an error exists
+      setShakeKey((prev) => prev + 1);
+    } else {
+      setShakeKey(0);
     }
-  }, [isError]);
+  }, [userInput, word, isError]);
 
   const renderWord = () => {
     return word.split('').map((char, index) => {
@@ -47,7 +48,10 @@ export const WordDisplay: React.FC<WordDisplayProps> = ({
   };
 
   return (
-    <div className={`${shake ? 'animate-shake' : ''} transition-all`}>
+    <div
+      key={isError ? shakeKey : 'no-shake'}
+      className={`${isError ? 'animate-shake' : ''} transition-all`}
+    >
       <div className="text-center py-16">
         <div className="text-6xl font-mono font-bold tracking-wider break-words">
           {isGameStarted ? renderWord() : <span className="text-gray-300">{word}</span>}

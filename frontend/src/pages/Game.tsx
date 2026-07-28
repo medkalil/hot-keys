@@ -179,7 +179,7 @@ export const Game: React.FC<GameProps> = ({ operator, onGameComplete }) => {
               <WordDisplay
                 word={state.currentWord}
                 userInput={state.userInput}
-                isError={state.userInput.length > 0 && !state.isCorrect && state.userInput.length <= state.currentWord.length}
+                isError={state.userInput.length > 0 && !state.currentWord.startsWith(state.userInput)}
                 isGameStarted={state.gameStarted}
               />
 
