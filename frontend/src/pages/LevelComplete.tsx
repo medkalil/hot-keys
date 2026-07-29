@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Operator } from '../types/game';
 import { SplitFlapCountdown } from '../components/SplitFlapCountdown';
 import { levelsAPI } from '../api/client';
+import { LevelUpAnimation } from '../components/LevelUpAnimation';
 
 interface LevelCompleteProps {
   operator: Operator | null;
@@ -23,6 +24,8 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
     timeLimit: number;
   } | null>(null);
   const [isPaused, setIsPaused] = useState(false);
+  const [hasLeveledUp, setHasLeveledUp] = useState(false);
+  const [showLevelUpAnimation, setShowLevelUpAnimation] = useState(false);
 
   const gameData = location.state || {
     level: 1,
@@ -36,7 +39,14 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
       if (!operator) return;
       try {
         const response = await levelsAPI.getLevelInfo(gameData.level, operator.id);
-        setLevelInfo(response.data.data);
+        const info = response.data.data;
+        setLevelInfo(info);
+
+        if (operator.current_level > gameData.level) {
+          setHasLeveledUp(true);
+          setShowLevelUpAnimation(true);
+        }
+
       } catch {
         setLevelInfo(null);
       }
@@ -57,7 +67,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   };
 
   useEffect(() => {
-    if (!levelInfo || isPaused) return;
+    if (!levelInfo || isPaused || showLevelUpAnimation) return;
 
     const canProceed = levelInfo.hasWordsLeft || levelInfo.nextLevel;
     if (!canProceed) return;
@@ -74,14 +84,28 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [levelInfo, isPaused]);
+  }, [levelInfo, isPaused, showLevelUpAnimation]);
 
   const handleBackHome = () => {
     navigate('/');
   };
 
+  const handleAnimationComplete = () => {
+    setShowLevelUpAnimation(false);
+  };
+
   const hasNextAction = levelInfo && (levelInfo.hasWordsLeft || levelInfo.nextLevel);
   const nextLevelNumber = levelInfo?.hasWordsLeft ? gameData.level : levelInfo?.nextLevel;
+
+  if (showLevelUpAnimation) {
+    return (
+      <LevelUpAnimation
+        fromLevel={gameData.level}
+        toLevel={operator?.current_level || gameData.level}
+        onComplete={handleAnimationComplete}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-paper overflow-y-auto px-4 py-12">
@@ -89,7 +113,14 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
         {/* Header */}
         <div className="mb-8 text-center sm:text-left">
           <h1 className="text-5xl font-bold mb-2">HOT KEYS</h1>
-          <p className="text-xl font-mono text-gray-700">SECTOR {gameData.level} COMPLETE</p>
+          <div className="flex items-center gap-4">
+            <p className="text-xl font-mono text-gray-700">SECTOR {gameData.level} COMPLETE</p>
+            {hasLeveledUp && (
+              <span className="bg-green-500 text-white font-bold text-xs py-1 px-3 rounded-full animate-fade-in">
+                PROMOTED
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Split Flap Countdown (if next level exists) */}
@@ -148,7 +179,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
               </div>
               <div className="text-center">
                 <div className="font-mono text-xs font-bold text-gray-600 mb-2">CURRENT LEVEL</div>
-                <div className="text-3xl font-bold font-mono">L{gameData.level}</div>
+                <div className="text-3xl font-bold font-mono">L{operator?.current_level}</div>
               </div>
             </div>
           </div>
@@ -163,7 +194,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
                 className={`
                   h-20 border-hard border-2 flex items-center justify-center font-mono font-bold text-xl
                   ${
-                    level <= gameData.level
+                    level <= (operator?.current_level || 0)
                       ? 'bg-text text-paper'
                       : 'bg-paper text-text'
                   }
@@ -171,7 +202,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
                   transition-all duration-300
                 `}
               >
-                {level <= gameData.level ? '✓ SECTOR ' + level : 'SECTOR ' + level}
+                {level <= (operator?.current_level || 0) ? '✓ SECTOR ' + level : 'SECTOR ' + level}
               </div>
             ))}
           </div>
