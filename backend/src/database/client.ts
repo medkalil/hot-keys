@@ -9,6 +9,7 @@ const pool = new Pool({
   host: isProduction ? process.env.DB_HOST : 'localhost',
   port: isProduction ? parseInt(process.env.DB_PORT || '5432') : 5433,
   database: process.env.DB_NAME || 'hotkeys_db',
+  ...(isProduction ? { ssl: { rejectUnauthorized: false } } : {}),
 });
 
 pool.on('error', (err) => {
