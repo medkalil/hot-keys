@@ -90,15 +90,16 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
               </h3>
             </div>
             <div className="border-hard border-2 bg-white hard-shadow-lg overflow-hidden">
-              <div className="grid grid-cols-5 bg-text text-white font-mono font-bold text-sm py-4 px-6">
+              <div className="grid grid-cols-6 bg-text text-white font-mono font-bold text-sm py-4 px-6">
                 <div>RNK</div>
                 <div>CALLSIGN</div>
                 <div className="text-center">ACCURACY</div>
                 <div className="text-center">TOTAL_SCORE</div>
+                <div className="text-center">BEST_WPM</div>
                 <div className="text-right">STATUS</div>
               </div>
 
-              <div className="grid grid-cols-5 items-center py-4 px-6 font-mono text-sm bg-yellow-50">
+              <div className="grid grid-cols-6 items-center py-4 px-6 font-mono text-sm bg-yellow-50">
                 <div className="font-bold text-lg">#{operatorRank.rank}</div>
                 <div className="font-bold flex items-center">
                   <span className="inline-block w-6 h-6 bg-text text-white text-center rounded-full mr-2 text-xs leading-6">
@@ -108,6 +109,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
                 </div>
                 <div className="text-center">{operatorRank.avg_accuracy}%</div>
                 <div className="font-bold text-center">{operatorRank.total_score?.toLocaleString()}</div>
+                <div className="font-bold text-center">{operatorRank.best_wpm}</div>
                 <div className="text-right">
                   <span className="text-xs font-bold text-green-800 bg-green-200 border border-green-600 px-3 py-1 font-mono uppercase">
                     YOU
@@ -127,11 +129,12 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
           </div>
           <div className="border-hard border-2 bg-white hard-shadow-lg overflow-hidden">
             {/* Header */}
-            <div className="grid grid-cols-5 bg-text text-white font-mono font-bold text-sm py-4 px-6">
+            <div className="grid grid-cols-6 bg-text text-white font-mono font-bold text-sm py-4 px-6">
               <div>RNK</div>
               <div>CALLSIGN</div>
               <div className="text-center">ACCURACY</div>
               <div className="text-center">TOTAL_SCORE</div>
+              <div className="text-center">BEST_WPM</div>
               <div className="text-center">CURRENT_LEVEL</div>
             </div>
 
@@ -149,7 +152,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
                   <div
                     key={entry.id}
                     className={`
-                      grid grid-cols-5 items-center py-4 px-6 font-mono text-sm
+                      grid grid-cols-6 items-center py-4 px-6 font-mono text-sm
                       ${operatorRank?.id === entry.id ? 'bg-yellow-50' : 'hover:bg-gray-50'}
                     `}
                   >
@@ -167,6 +170,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ operator }) => {
                       <div className="text-xs mt-1">{entry.avg_accuracy}%</div>
                     </div>
                     <div className="font-bold text-center">{entry.total_score?.toLocaleString()}</div>
+                    <div className="font-bold text-center">{entry.best_wpm}</div>
                     <div className="text-xs text-gray-600 text-center">L{entry.current_level}</div>
                   </div>
                 ))}
