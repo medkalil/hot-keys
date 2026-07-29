@@ -8,7 +8,7 @@ const router = Router();
 // Submit game result
 router.post('/', async (req: Request, res: Response) => {
   try {
-    const { operator_id, level, wpm, accuracy, score, word_id } = req.body as SubmitGameRequest & { word_id: number };
+    const { operator_id, level, wpm, accuracy, score, word_id } = req.body as SubmitGameRequest;
 
     if (!operator_id || !level || wpm === undefined || accuracy === undefined || score === undefined || !word_id) {
       return res.status(400).json({
