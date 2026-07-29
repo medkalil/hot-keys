@@ -26,6 +26,7 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [hasLeveledUp, setHasLeveledUp] = useState(false);
   const [showLevelUpAnimation, setShowLevelUpAnimation] = useState(false);
+  const [checkingLevelUp, setCheckingLevelUp] = useState(true);
 
   const gameData = location.state || {
     level: 1,
@@ -36,7 +37,10 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
 
   useEffect(() => {
     const checkNextLevel = async () => {
-      if (!operator) return;
+      if (!operator) {
+        setCheckingLevelUp(false);
+        return;
+      }
       try {
         const response = await levelsAPI.getLevelInfo(gameData.level, operator.id);
         const info = response.data.data;
@@ -49,6 +53,8 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
 
       } catch {
         setLevelInfo(null);
+      } finally {
+        setCheckingLevelUp(false);
       }
     };
 
@@ -96,6 +102,17 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
 
   const hasNextAction = levelInfo && (levelInfo.hasWordsLeft || levelInfo.nextLevel);
   const nextLevelNumber = levelInfo?.hasWordsLeft ? gameData.level : levelInfo?.nextLevel;
+
+  if (checkingLevelUp) {
+    return (
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4">HOT KEYS</h1>
+          <p className="font-mono text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (showLevelUpAnimation) {
     return (
