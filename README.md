@@ -228,7 +228,96 @@ Score = (WPM × Accuracy%) × Level Difficulty Multiplier
 - **WPM** (Words Per Minute): (Character Count ÷ 5) ÷ Time in Minutes
 - **Accuracy**: (Correct Characters ÷ Target Length) × 100%
 
-## 🎨 Design System
+## ➕ Extending the Game: Adding New Levels and Words
+
+The game's levels and words are managed directly within the database schema and seed data. To add new content:
+
+### 1. Add New Levels
+
+To introduce a new level, you need to add an entry to the `levels` table in `backend/src/database/init.sql`.
+
+Locate the `Seed Levels Metadata` section and add a new `INSERT` statement:
+
+```sql
+-- Seed Levels Metadata
+INSERT INTO levels (number, name, description, difficulty, min_accuracy, time_limit) VALUES
+(1, 'SECTOR ALPHA', 'Basic typing practice', 'Easy', 80, 60),
+(2, 'SECTOR BETA', 'Technical terminology', 'Medium', 85, 50),
+(3, 'SECTOR GAMMA', 'Advanced vocabulary', 'Hard', 90, 40),
+(4, 'SECTOR DELTA', 'New challenging words', 'Extreme', 95, 30) -- <--- Add your new level here
+ON CONFLICT (number) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  difficulty = EXCLUDED.difficulty,
+  min_accuracy = EXCLUDED.min_accuracy,
+  time_limit = EXCLUDED.time_limit;
+```
+
+*   **`number`**: A unique integer for your new level (e.g., `4`).
+*   **`name`**: A descriptive name for the level (e.g., `'SECTOR DELTA'`).
+*   **`description`**: A brief description.
+*   **`difficulty`**: A string indicating difficulty (e.g., `'Extreme'`).
+*   **`min_accuracy`**: The minimum accuracy percentage required for this level.
+*   **`time_limit`**: The time limit in seconds for this level.
+
+### 2. Add New Level Words
+
+After defining your new level, you can add words specifically for it to the `level_words` table in `backend/src/database/init.sql`.
+
+Locate the `Seed Level Words` section and add `INSERT` statements, ensuring you link them to your new level number:
+
+```sql
+-- Seed Level Words
+DELETE FROM level_words WHERE level_number IN (1, 2, 3); -- Update this to include your new level number if you want to re-seed all words
+
+INSERT INTO level_words (level_number, word) VALUES
+-- Level 1 Words
+(1, 'the quick brown fox'),
+-- ... existing Level 1 words ...
+
+-- Level 2 Words
+(2, 'algorithmic complexity'),
+-- ... existing Level 2 words ...
+
+-- Level 3 Words
+(3, 'phenomenological transcendence'),
+-- ... existing Level 3 words ...
+
+-- Level 4 Words (for SECTOR DELTA) <--- Add your new words here
+(4, 'quantum entanglement theory'),
+(4, 'superposition principle'),
+(4, 'cryptographic hash function'),
+(4, 'decentralized autonomous organization');
+```
+
+*   Ensure the `level_number` matches the `number` of your new level.
+*   Add as many words as you like. Each word should be a separate `INSERT` entry.
+
+### 3. Apply Database Changes
+
+After modifying `backend/src/database/init.sql`:
+
+*   **For Docker Compose users:** You will typically need to rebuild and restart your database service to apply these schema changes.
+    ```bash
+    docker-compose down
+    docker-compose up --build
+    ```
+*   **For local PostgreSQL users:** You would need to manually run the SQL script against your database or use a migration tool if one were set up.
+
+### 4. Frontend Considerations
+
+*   **Level Progression Indicator:** The visual level progression indicator in `frontend/src/pages/LevelComplete.tsx` currently hardcodes `[1, 2, 3]`. If you add more than 3 levels, you might want to update this array dynamically or extend it manually to reflect all available levels.
+    ```typescript
+    // In frontend/src/pages/LevelComplete.tsx
+    {[1, 2, 3, 4].map((level) => ( // Extend this array for more levels
+      // ...
+    ))}
+    ```
+    Alternatively, you could fetch the total number of levels from the backend to make this dynamic.
+
+*   **Level-Specific Logic:** If your new levels introduce new game mechanics or require specific frontend handling, you will need to update the frontend logic accordingly.
+
+By following these steps, you can easily expand the content of your HOT KEYS typing game.
 
 ### Color Palette
 - **Paper**: #F8F8F8 (background)
