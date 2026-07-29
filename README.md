@@ -32,6 +32,15 @@ A brutalist-styled competitive typing speed game with real-time scoring, level p
 - Docker & Docker Compose for containerized development
 - PostgreSQL 15 Alpine
 
+### Deployment Architecture
+
+The application is deployed across various cloud platforms:
+
+-   **Frontend (React App):** Hosted on [Vercel](https://vercel.com/). Vercel provides seamless deployment for frontend applications, offering automatic scaling, global CDN, and continuous deployment from Git repositories.
+(https://hot-keys-lake.vercel.app).
+-   **Backend (Express.js API):** Deployed on [Render](https://render.com/). Render is a unified cloud platform that allows hosting web services, databases, and more. It provides a managed environment for the Node.js Express API.
+-   **Database (PostgreSQL):** Utilizes [Neon](https://neon.tech/) for the PostgreSQL database. Neon is a serverless PostgreSQL that separates storage and compute, offering autoscaling, branching, and a generous free tier.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
