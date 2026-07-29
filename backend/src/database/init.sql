@@ -50,18 +50,18 @@ CREATE TABLE IF NOT EXISTS operator_played_words (
 -- Create leaderboard view
 CREATE OR REPLACE VIEW leaderboard AS
 SELECT 
-  row_number() OVER (ORDER BY SUM(games.score) DESC) as rank,
+  row_number() OVER (ORDER BY operators.current_level DESC, SUM(games.score) DESC, AVG(games.accuracy) DESC, MAX(games.wpm) DESC) as rank,
   operators.id,
   operators.callsign,
   operators.current_level,
-  SUM(games.score) as total_score,
+  COALESCE(SUM(games.score), 0) as total_score,
   COUNT(games.id) as games_played,
-  ROUND(AVG(games.accuracy)::numeric, 2) as avg_accuracy,
-  MAX(games.wpm) as best_wpm
+  COALESCE(ROUND(AVG(games.accuracy)::numeric, 2), 0) as avg_accuracy,
+  COALESCE(MAX(games.wpm), 0) as best_wpm
 FROM operators
 LEFT JOIN games ON operators.id = games.operator_id
 GROUP BY operators.id, operators.callsign, operators.current_level
-ORDER BY total_score DESC;
+ORDER BY rank;
 
 -- Create indexes for performance
 CREATE INDEX IF NOT EXISTS idx_games_operator_id ON games(operator_id);
