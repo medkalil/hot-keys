@@ -60,8 +60,8 @@ export const levelsAPI = {
   get: (level: number, operator_id: string) =>
     client.get(`/api/levels/${level}`, { params: { operator_id } }),
   
-  getInfo: (level: number) =>
-    client.get(`/api/levels/${level}/info`),
+  getLevelInfo: (level: number, operator_id: string) =>
+    client.get(`/api/levels/${level}/info`, { params: { operator_id } }),
 };
 
 export default client;

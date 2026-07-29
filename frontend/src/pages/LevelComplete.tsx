@@ -13,7 +13,15 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState(10);
-  const [hasNextLevel, setHasNextLevel] = useState<boolean | null>(null);
+  const [levelInfo, setLevelInfo] = useState<{
+    hasWordsLeft: boolean;
+    nextLevel: number | null;
+    name: string;
+    description: string;
+    difficulty: string;
+    minAccuracy: number;
+    timeLimit: number;
+  } | null>(null);
   const [isPaused, setIsPaused] = useState(false);
 
   const gameData = location.state || {
@@ -23,31 +31,21 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
     score: 0,
   };
 
-  const [nextLevelInfo, setNextLevelInfo] = useState<{
-    name: string;
-    description: string;
-    difficulty: string;
-    minAccuracy: number;
-    timeLimit: number;
-  } | null>(null);
-
-  // Dynamically check if the next level exists in the system via API
   useEffect(() => {
     const checkNextLevel = async () => {
+      if (!operator) return;
       try {
-        const response = await levelsAPI.getInfo(gameData.level + 1);
-        setNextLevelInfo(response.data.data);
-        setHasNextLevel(true);
+        const response = await levelsAPI.getLevelInfo(gameData.level, operator.id);
+        setLevelInfo(response.data.data);
       } catch {
-        setHasNextLevel(false);
-        setNextLevelInfo(null);
+        setLevelInfo(null);
       }
     };
 
     checkNextLevel();
-  }, [gameData.level]);
+  }, [gameData.level, operator]);
 
-  const handleNextLevel = async () => {
+  const handleNext = async () => {
     if (loading) return;
     setLoading(true);
     try {
@@ -59,13 +57,16 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
   };
 
   useEffect(() => {
-    if (!hasNextLevel || isPaused) return;
+    if (!levelInfo || isPaused) return;
+
+    const canProceed = levelInfo.hasWordsLeft || levelInfo.nextLevel;
+    if (!canProceed) return;
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleNextLevel();
+          handleNext();
           return 0;
         }
         return prev - 1;
@@ -73,11 +74,14 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [hasNextLevel, isPaused]);
+  }, [levelInfo, isPaused]);
 
   const handleBackHome = () => {
     navigate('/');
   };
+
+  const hasNextAction = levelInfo && (levelInfo.hasWordsLeft || levelInfo.nextLevel);
+  const nextLevelNumber = levelInfo?.hasWordsLeft ? gameData.level : levelInfo?.nextLevel;
 
   return (
     <div className="min-h-screen bg-paper overflow-y-auto px-4 py-12">
@@ -89,11 +93,11 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
         </div>
 
         {/* Split Flap Countdown (if next level exists) */}
-        {hasNextLevel && (
+        {hasNextAction && (
           <div className="relative mb-8 animate-fade-in">
             <SplitFlapCountdown
               seconds={countdown}
-              label={`ENGAGING SECTOR ${gameData.level + 1} IN`}
+              label={`ENGAGING SECTOR ${nextLevelNumber} IN`}
             />
             <div className="absolute top-2 right-2">
               {isPaused ? (
@@ -175,22 +179,22 @@ export const LevelComplete: React.FC<LevelCompleteProps> = ({ operator }) => {
 
         {/* Buttons */}
         <div className="space-y-4">
-          {hasNextLevel ? (
+          {hasNextAction ? (
             <div>
-              {nextLevelInfo && (
+              {levelInfo && (
                 <div className="mb-3 font-mono text-xs text-gray-700 bg-amber-50 border-2 border-hard p-3 flex items-center justify-between font-bold">
-                  <span>OBJECTIVE: {nextLevelInfo.name}</span>
+                  <span>OBJECTIVE: {levelInfo.name}</span>
                   <span className="uppercase text-amber-800">
-                    {nextLevelInfo.difficulty} • {nextLevelInfo.timeLimit}S LIMIT • {nextLevelInfo.minAccuracy}% MIN ACC
+                    {levelInfo.difficulty} • {levelInfo.timeLimit}S LIMIT • {levelInfo.minAccuracy}% MIN ACC
                   </span>
                 </div>
               )}
               <button
-                onClick={handleNextLevel}
+                onClick={handleNext}
                 disabled={loading || isPaused}
                 className="w-full button-base text-lg py-4 hard-shadow-lg flex items-center justify-center gap-3 disabled:opacity-50"
               >
-                {loading ? 'INITIALIZING...' : `▶ ENGAGE ${nextLevelInfo ? nextLevelInfo.name : 'SECTOR ' + (gameData.level + 1)} NOW`}
+                {loading ? 'INITIALIZING...' : `▶ ENGAGE SECTOR ${nextLevelNumber} NOW`}
               </button>
             </div>
           ) : (

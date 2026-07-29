@@ -85,12 +85,20 @@ router.get('/:level', async (req: Request, res: Response) => {
 router.get('/:level/info', async (req: Request, res: Response) => {
   try {
     const { level } = req.params;
+    const { operator_id } = req.query;
     const levelNum = parseInt(level);
 
     if (isNaN(levelNum) || levelNum < 1) {
       return res.status(400).json({
         success: false,
         error: 'Invalid level',
+      } as ApiResponse<null>);
+    }
+
+    if (!operator_id) {
+      return res.status(400).json({
+        success: false,
+        error: 'operator_id is required',
       } as ApiResponse<null>);
     }
 
@@ -106,9 +114,41 @@ router.get('/:level/info', async (req: Request, res: Response) => {
       } as ApiResponse<null>);
     }
 
+    const levelData = levelRes.rows[0];
+
+    // Check if there are words left for the operator in this level
+    const playedWordsRes = await pool.query(
+      'SELECT COUNT(*) FROM operator_played_words WHERE operator_id = $1 AND level_number = $2',
+      [operator_id, levelNum]
+    );
+    const playedWordsCount = parseInt(playedWordsRes.rows[0].count);
+
+    const totalWordsRes = await pool.query(
+      'SELECT COUNT(*) FROM level_words WHERE level_number = $1',
+      [levelNum]
+    );
+    const totalWordsCount = parseInt(totalWordsRes.rows[0].count);
+
+    const hasWordsLeft = playedWordsCount < totalWordsCount;
+
+    let nextLevel = null;
+    if (!hasWordsLeft) {
+      const nextLevelRes = await pool.query(
+        'SELECT number FROM levels WHERE number > $1 ORDER BY number ASC LIMIT 1',
+        [levelNum]
+      );
+      if (nextLevelRes.rows.length > 0) {
+        nextLevel = nextLevelRes.rows[0].number;
+      }
+    }
+
     return res.json({
       success: true,
-      data: levelRes.rows[0],
+      data: {
+        ...levelData,
+        hasWordsLeft,
+        nextLevel,
+      },
     } as ApiResponse<any>);
   } catch (error) {
     console.error('Error fetching level info:', error);
